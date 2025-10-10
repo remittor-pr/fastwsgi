@@ -131,3 +131,13 @@ jobs:
           python -m build --sdist
           twine check --strict dist/*
           twine check --strict dist-wheels/*
+
+      - name: Publish wheels to PyPI
+        if: github.event.action == 'published' && github.event.inputs.test_build != 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist-wheels/
+
+      - name: Publish sdist to PyPI
+        if: github.event.action == 'published' && github.event.inputs.test_build != 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
