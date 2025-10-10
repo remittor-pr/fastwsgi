@@ -2,16 +2,22 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - devrem
-  pull_request:
-    paths:
-      - ".github/workflows/deploy.yml"
   release:
     types:
       - published
   workflow_dispatch:
+    inputs:
+      test_build:
+        description: 'Test build'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+        - true
+        - false
+  push:
+    tags:
+      - v[0-9]+*
 
 permissions: {}
 
@@ -79,9 +85,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-      - run: |
-            git fetch --prune --unshallow
-
+        with:      
+          fetch-depth: 0    # Optional, use if you use setuptools_scm
+          submodules: true  # Optional, use if you have submodules      
+      #- run: |
+      #      git fetch --prune --unshallow
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -90,6 +98,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip
+          python -m pip install -U click
           python -m pip install -U build twine
 
       - name: Download wheels from build artifacts
