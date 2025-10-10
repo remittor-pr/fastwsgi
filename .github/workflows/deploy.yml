@@ -43,8 +43,17 @@ jobs:
           - os: ubuntu-24.04-arm
             cibw_arch: aarch64
     steps:
-      - uses: actions/checkout@v5
-      - run: git fetch --prune --unshallow
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+        with:      
+          fetch-depth: 0    # Optional, use if you use setuptools_scm
+          #fetch-tags: true
+          #submodules: true  # Optional, use if you have submodules      
+          submodules: recursive  # Optional, use if you have submodules
+
+      - name: Acquire tags for the repo
+        run: |
+            git fetch --prune --depth=1
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -91,11 +100,13 @@ jobs:
           #fetch-tags: true
           #submodules: true  # Optional, use if you have submodules      
           submodules: recursive  # Optional, use if you have submodules
+
       - name: Acquire tags for the repo
         run: |
             git fetch --prune --depth=1
             # git fetch --prune --unshallow
             # git fetch --no-tags --prune --depth=1 origin +refs/tags/*:refs/tags/*
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
